@@ -1,0 +1,3 @@
+[submodule "Publish/UnityWebCollectDevice"]
+	path = Publish/UnityWebCollectDevice
+	url = git@github.com:chenweichao199111/UnityWebCollectDevice.git
