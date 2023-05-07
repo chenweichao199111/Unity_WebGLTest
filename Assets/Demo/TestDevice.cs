@@ -1,4 +1,7 @@
 ﻿using Logic;
+#if UNITY_WEBGL && !UNITY_EDITOR
+using System.Runtime.InteropServices;
+#endif
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,6 +10,11 @@ public class TestDevice : MonoBehaviour
 {
     public TMP_Text textMeshPro;
     public Button getDeviceBtn;
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+    [DllImport("__Internal")]
+    private static extern void OnCopy(string content);
+#endif
 
     void Start()
     {
@@ -24,33 +32,50 @@ public class TestDevice : MonoBehaviour
         else 
         {
             Debug.Log("当前设备是低性能设备");
-            int level = QualitySettings.GetQualityLevel();
-            Debug.Log("质量等级由" + level + "调成0");
             QualitySettings.SetQualityLevel(0, true);
         }
 
-        #region 显示部分
+#region 显示部分
         if (dpl == DevicePerformanceLevel.High)
         {
-            textMeshPro.text = string.Format("显卡存储：{0}MB\r\nCPU核心：{1}\r\n内存：{2}MB\r\n当前设备是高性能设备",
-                SystemInfo.graphicsMemorySize, SystemInfo.processorCount, SystemInfo.systemMemorySize);
+            string str = string.Format("显卡名称：{0}\r\n显卡存储：{1}MB\r\nCPU核心：{2}\r\n内存：{3}MB",
+                SystemInfo.graphicsDeviceName,
+                DeviceUtil.GetGpuMemory(),
+                DeviceUtil.GetCpuProcessorCount(),
+                DeviceUtil.GetSystemMemory());
+            str = string.Format("{0}\r\n当前设备是高性能设备", str);
+            textMeshPro.text = str;
         }
         else if (dpl == DevicePerformanceLevel.Mid)
         {
-            textMeshPro.text = string.Format("显卡存储：{0}MB\r\nCPU核心：{1}\r\n内存：{2}MB\r\n当前设备是中性能设备",
-                SystemInfo.graphicsMemorySize, SystemInfo.processorCount, SystemInfo.systemMemorySize);
+            string str = string.Format("显卡名称：{0}\r\n显卡存储：{1}MB\r\nCPU核心：{2}\r\n内存：{3}MB",
+                SystemInfo.graphicsDeviceName,
+                DeviceUtil.GetGpuMemory(),
+                DeviceUtil.GetCpuProcessorCount(),
+                DeviceUtil.GetSystemMemory());
+            str = string.Format("{0}\r\n当前设备是中性能设备", str);
+            textMeshPro.text = str;
         }
         else
         {
-            textMeshPro.text = string.Format("显卡存储：{0}MB\r\nCPU核心：{1}\r\n内存：{2}MB\r\n当前设备是低性能设备",
-                SystemInfo.graphicsMemorySize, SystemInfo.processorCount, SystemInfo.systemMemorySize);
+            string str = string.Format("显卡名称：{0}\r\n显卡存储：{1}MB\r\nCPU核心：{2}\r\n内存：{3}MB",
+                SystemInfo.graphicsDeviceName,
+                DeviceUtil.GetGpuMemory(),
+                DeviceUtil.GetCpuProcessorCount(),
+                DeviceUtil.GetSystemMemory());
+            str = string.Format("{0}\r\n当前设备是低性能设备", str);
+            textMeshPro.text = str;
         }
         getDeviceBtn.onClick.AddListener(OnClickGetDeviceBtn);
-        #endregion
+#endregion
     }
 
     private void OnClickGetDeviceBtn()
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        OnCopy(textMeshPro.text);
+#else
         GUIUtility.systemCopyBuffer = textMeshPro.text;
+#endif
     }
 }

@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity WebGL Player | %UNITY_WEB_NAME%</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+    <script src="TemplateData/UnityProgress.js"></script>
+    <script src="%UNITY_WEBGL_LOADER_URL%"></script>
+    <script>
+      var unityInstance = UnityLoader.instantiate("unityContainer", "%UNITY_WEBGL_BUILD_URL%", {onProgress: UnityProgress});
+    </script>
+  </head>
+  <body>
+    <script>
+        //复制文本
+        function copy(text)
+        {
+            var element = createElement(text);
+            element.select();
+            element.setSelectionRange(0, element.value.length);
+            document.execCommand('copy');
+            element.remove();
+        }
+ 
+        //创建临时的输入框元素
+        function createElement(text)
+        {
+            var isRTL = document.documentElement.getAttribute('dir') === 'rtl';
+            var element = document.createElement('textarea');
+            // 防止在ios中产生缩放效果
+            element.style.fontSize = '12pt';
+            // 重置盒模型
+            element.style.border = '0';
+            element.style.padding = '0';
+            element.style.margin = '0';
+            // 将元素移到屏幕外
+            element.style.position = 'absolute';
+            element.style[isRTL ? 'right' : 'left'] = '-9999px';
+            // 移动元素到页面底部
+            let yPosition = window.pageYOffset || document.documentElement.scrollTop;
+            element.style.top = `${yPosition}px`;
+            //设置元素只读
+            element.setAttribute('readonly', '');
+            element.value = text;
+            document.body.appendChild(element);
+            return element;
+        }
+
+        function getDeviceMemory()
+        {
+            if(navigator.deviceMemory == null)
+            {
+                return 2;  // 手机上拿不到这个值，所以暂时返回2GB
+            }
+            return navigator.deviceMemory;
+        }
+
+        function getProcessorCount()
+        {
+            return navigator.hardwareConcurrency;
+        }
+
+        function isMobile()
+        {
+            if(navigator.userAgentData == null || navigator.userAgentData.mobile)
+            {
+                // 当前使用的设备是手机
+                return true;
+            }
+            else
+            {
+                // 当前使用的设备是电脑
+                return false;
+            }
+        }
+    </script>
+    <div class="webgl-content">
+      <div id="unityContainer" style="width: %UNITY_WIDTH%px; height: %UNITY_HEIGHT%px"></div>
+      <div class="footer">
+        <div class="webgl-logo"></div>
+        <div class="fullscreen" onclick="unityInstance.SetFullscreen(1)"></div>
+        <div class="title">%UNITY_WEB_NAME%</div>
+      </div>
+    </div>
+  </body>
+</html>
